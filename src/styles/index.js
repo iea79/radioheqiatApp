@@ -1,0 +1,60 @@
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
+    content: {
+        flex: 1,
+        paddingTop: 20,
+        paddingLeft: 25,
+        paddingRight: 25,
+    },
+    input: {
+        fontSize: 14,
+        color: '#ffffff',
+        height: 60,
+        borderRadius: 100,
+        borderWidth: 2,
+        borderStyle: 'solid',
+        borderColor: '#6A429D',
+        paddingLeft: 30,
+        paddingRight: 30,
+        marginBottom: 20
+    },
+    link: {
+        color: '#FAB042',
+    },
+    btn: {
+        height: 60,
+        padding: 20,
+        fontSize: 16,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        // background: 'linear-gradient(124.35deg, #F7D378 20.25%, #FAB042 82.84%)',
+        borderRadius: 100,
+        fontWeight: 'bold',
+        marginBottom: 20
+    },
+    btnSuccess: {
+        backgroundColor: '#FAB042',
+        color: '#ffffff',
+    },
+    btnBorder: {
+        borderWidth: 2,
+        borderColor: '#FAB042',
+        color: '#FAB042',
+    },
+    tabBarStyle: {
+        paddingTop: 12,
+        paddingBottom: 21,
+        height: 83,
+        backgroundColor: '#50238A',
+    },
+    loading: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
+});

@@ -1,0 +1,18 @@
+export const getToken = (token) => ({type: 'GET_TOKEN', payload: token});
+export const setUserId = (id) => ({type: 'SET_USER_ID', payload: id});
+export const setName = (name) => ({type: 'SET_NAME', payload: name});
+export const setEmail = (email) => ({type: 'SET_EMAIL', payload: email});
+export const setPhone = (phone) => ({type: 'SET_PHONE', payload: phone});
+export const setPassword = (password) => ({type: 'SET_PASSWORD', payload: password});
+export const setFavorites = (favorites) => ({type: 'SET_FAVORITES', payload: favorites});
+export const setLoader = (loader) => ({type: 'SET_LOADER', payload: loader});
+export const setMessage = (message) => ({type: 'SET_MESSAGE', payload: message});
+export const setMessageType = (messageType) => ({type: 'SET_MESSAGE_TYPE', payload: messageType});
+export const setBookPlayed = (book) => ({type: 'SET_BOOK_PLAYED', payload: book});
+export const setLive = (live) => ({type: 'SET_LIVE', payload: live});
+export const setLiveLoader = (bool) => ({type: 'SET_LIVE_LOADER', payload: bool});
+export const setLivePaused = (bool) => ({type: 'SET_LIVE_PAUSED', payload: bool});
+export const setLiveScreen = (bool) => ({type: 'SET_LIVE_SCREEN', payload: bool});
+export const setLiveDuration = (duration) => ({type: 'SET_LIVE_DURATION', payload: duration});
+export const setLivePosition = (position) => ({type: 'SET_LIVE_POSITION', payload: position});
+export const logOut = () => ({type: 'LOGOUT'});
