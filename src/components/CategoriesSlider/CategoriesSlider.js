@@ -1,22 +1,14 @@
 import React, { useState, useLayoutEffect, useCallback } from 'react';
-import { StyleSheet, FlatList } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import Slide from './Slide';
 import RestService from '../../services/RestService';
 
 // const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
-const slideList = Array.from({ length: 5 }).map((el, i) => {
-    return {
-        id: i,
-        image: `https://picsum.photos/1440/2842?random=${i}`,
-        title: `This is the title! ${i + 1}`,
-        subtitle: `This is the subtitle ${i + 1}!`,
-    };
-});
-
 const restService = new RestService();
 
-const CategoriesSlider = () => {
+const CategoriesSlider = ({ navigation, route }) => {
+    console.log(navigation);
     const [ category, setCategory ] = useState([]);
 
     useLayoutEffect(() => {
@@ -26,33 +18,46 @@ const CategoriesSlider = () => {
     }, [category]);
 
     const setCats = useCallback(() => {
-        restService.getBooksCategories().then(json => {
-            setCategory(json);
-        }).catch(err => {
-            setCategory([]);
-        });
+        if (!category.length) {
+            restService.getBooksCategories('').then(json => {
+                // console.log(json);
+                setCategory(json);
+            }).catch(err => {
+                setCategory([]);
+            });
+        }
     }, [category]);
 
     return (
-        <FlatList
-            horizontal={true}
-            data={ category }
-            style={ styles.list }
-            renderItem={({ item }) => {
-                return <Slide data={item} />;
-            }}
-        />
+        <>
+            <FlatList
+                horizontal={true}
+                data={ category }
+                style={ styles.list }
+                renderItem={({ item }) => {
+                    return <Slide data={item} navigation={navigation} route={route} />;
+                }}
+            />
+            { !category.length ? <ActivityIndicator style={ styles.loader } /> : null }
+        </>
     )
 }
 
 const styles = StyleSheet.create({
     list: {
-        flex: 0,
+        // flex: 1,
+        boxSizing: 'border-box',
+        height: 180,
         alignSelf: 'flex-start',
-        marginRight: -15,
-        marginLeft: -15,
+        paddingLeft: 25,
+        // paddingRight: 10,
+        marginRight: -25,
+        marginLeft: -25,
         marginBottom: 46,
         // height: 180
+    },
+    loader: {
+        alignSelf: 'center'
     }
 })
 

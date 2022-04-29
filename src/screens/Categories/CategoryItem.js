@@ -1,24 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import { Pressable, StyleSheet, Text, Image } from 'react-native';
 
-const Slide = ({ data, navigation, route }) => {
+const CategoryItem = ({ data, navigation }) => {
     // console.log(data);
     // console.log(navigation);
-    // console.log(route);
     const { slide, img, title } = styles;
-    const { id, name, media: { cover_small, lotty } } = data;
+    const { media: { cover }, id, name } = data;
 
     const setCover = () => {
-        // if (lotty) {
-        //     return <LottieView source={{
-        //             // uri: lotty
-        //         }} autoPlay loop resizeMode="center"/>
-        // } else {
-        // }
-        if (cover_small) {
+        if (cover) {
             return <Image
                 resizeMode={'cover'}
-                source={{ uri: cover_small }}
+                source={{ uri: cover }}
                 style={ img }
                 ></Image>
         }
@@ -27,12 +20,9 @@ const Slide = ({ data, navigation, route }) => {
     return (
         <Pressable
             onPress={() => {
-                navigation.navigate('CatalogScreen', {
-                    screen: 'Category',
-                    params: {
-                        id: id,
-                        name: name,
-                    }
+                navigation.navigate('Category', {
+                    id: id,
+                    name: name,
                 });
             }}
             style={ slide }
@@ -41,33 +31,38 @@ const Slide = ({ data, navigation, route }) => {
             <Text style={ title }>{data.name}</Text>
         </Pressable>
     );
-}
+};
 
 const styles = StyleSheet.create({
     slide: {
         height: 180,
-        width: 150,
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 10,
         // overflow: 'hidden',
         backgroundColor: '#82278A',
-        marginRight: 15,
+        marginBottom: 10,
         alignItems: 'flex-start',
-        justifyContent: 'flex-start'
+        justifyContent: 'flex-start',
     },
     img: {
         position: 'absolute',
+        // flex: 1,
         width: '100%',
         height: '100%',
         borderRadius: 10
     },
     title: {
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: 'bold',
         color: '#ffffff',
-        padding: 14
+        width: 196,
+        paddingTop: 18,
+        paddingLeft: 28,
+        paddingRight: 28,
+        paddingBottom: 18
     }
 })
 
-export default Slide;
+
+export default CategoryItem;

@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, SafeAreaView, VirtualizedList } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, FlatList, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
 import Book from './Book';
 import RestService from '../../services/RestService';
 
@@ -19,10 +19,11 @@ const BooksHeader = () => {
     return <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 34, color: '#ffffff' }}>Հիմա լսում եմ</Text>
 }
 
-const HomeBooks = () => {
+const Books = ({ navigation, route }) => {
     const [ bookList, setBookList ] = useState([]);
+    console.log(route);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         // alert('effect');
         if (!bookList.length) {
             setList();
@@ -44,16 +45,20 @@ const HomeBooks = () => {
                 style={ styles.list }
                 data={bookList}
                 renderItem={({ item }) => {
-                    return bookList.length && <Book data={item} />;
+                    return bookList.length && <Book data={item} navigation={navigation} route={route} />;
                 }}
                 ListHeaderComponent={BooksHeader}
             />
+        { !bookList.length ? <ActivityIndicator style={ styles.loader } /> : null }
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
-    list: {}
+    list: {},
+    loader: {
+        alignSelf: 'center'
+    }
 })
 
-export default HomeBooks;
+export default Books;

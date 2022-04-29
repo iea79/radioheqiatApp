@@ -4,6 +4,7 @@ export default class AutorizationService {
 
     // _auth = 'http://radioheqatrest.frontendie.ru/?rest_route=/simple-jwt-login/v1';
     _auth = 'https://radioheqiat.fm/?rest_route=/simple-jwt-login/v1';
+    _wprest = 'https://radioheqiat.fm/wp-json/wp/v2';
 
     async authUser(data) {
         console.log(data);

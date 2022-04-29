@@ -6,6 +6,7 @@ export default StyleSheet.create({
         paddingTop: 20,
         paddingLeft: 25,
         paddingRight: 25,
+        paddingBottom: 73,
     },
     input: {
         fontSize: 14,

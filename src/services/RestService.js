@@ -8,6 +8,7 @@ export default class RestService {
     async mapBookArray(arr, count = 20) {
         const books = [];
         await arr.map((item, i) => {
+            // console.log(item);
             if (i < count) {
                 books.push({
                     id: item.id,
@@ -21,6 +22,7 @@ export default class RestService {
                     authorPhoto: item.author.photo,
                     authorName: item.author.name,
                     authorRead: item.author.read_by,
+                    content: item.content.rendered,
                 })
             }
         })
@@ -56,10 +58,21 @@ export default class RestService {
         return await list.json();
     }
 
-    async getBooksCategories() {
-        const list = await fetch(`${this._wprest}/book-category`);
+    async getBooksCategories(params = '') {
+        // ?parent=0
+        const list = await fetch(`${this._wprest}/book-category${params}`);
 
         return await list.json();
+    }
+
+    async getAllBooksCategory(id, count = 20) {
+        const list = await fetch(`${this._wprest}/books?book-category=${id}`);
+
+        const arr = await list.json();
+
+        // console.log(arr);
+
+        return await this.mapBookArray(arr, count);
     }
 
     async getBook(id) {

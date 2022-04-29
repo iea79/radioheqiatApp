@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
     Image,
@@ -6,22 +6,18 @@ import {
     View
 } from 'react-native';
 
-const Welcome = () => {
+const Welcome = ({navigation}) => {
     const { img, text, container } = welcome;
-    const [splash, toggleSplash] = useState(true);
-    useLayoutEffect(() => {
-        setTimeout(function () {
-            toggleSplash(false);
-        }, 2000);
-    }, []);
 
-    const splashHide = () => {
-        toggleSplash(false);
-    }
+    useEffect(() => {
+        navigation.getParent().setOptions({
+            tabBarStyle: { display: "none" }
+        });
+    }, []);
 
     return (
         <View
-            style={ splash ? container : container.hide }
+            style={ container }
             >
             <Image
                 style={ img }
@@ -32,7 +28,6 @@ const Welcome = () => {
             />
             <Text
                 style={ text }
-                onPress={() => splashHide()}
                 >Բարի գալուստ հեքիաթ</Text>
         </View>
     )
@@ -40,11 +35,11 @@ const Welcome = () => {
 
 const welcome = StyleSheet.create({
     container: {
-        position: 'absolute',
-        top: -60,
+        // position: 'absolute',
+        // top: -60,
         // bottom: -88,
         width: '100%',
-        zIndex: 5,
+        // zIndex: 5,
         // transition: '0.4s',
 
         hide: {

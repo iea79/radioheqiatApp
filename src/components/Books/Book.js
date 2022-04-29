@@ -1,22 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import AutorizationService from '../../services/AutorizationService';
+import { setFavorites } from '../../actions/actions';
 
-const Book = ({ data }) => {
+const authService = new AutorizationService();
+
+const Book = ({ data, navigation, route }) => {
     const { row, link, cover, img, title, descript, favorite, foot } = styles;
     const [ favor, toggleFavor ] = useState(false);
 
-    const toggleFavorite = () => {
+    const dispatch = useDispatch();
+    const { token, userId, userFavorites } = useSelector(state => state);
+    const state = useSelector(state => state);
+    // console.log(data);
+    // // console.log(navigation);
+    // console.log(route);
+
+    useEffect(() => {
+        if (userFavorites.length) {
+            userFavorites.forEach(item => {
+                if (item == data.id) {
+                    toggleFavor(true);
+                }
+            });
+        }
+    },[favor]);
+
+    const toggleFavorite = async () => {
         toggleFavor(!favor);
+        await authService.addToFavoritList(userId, data.id, token).then(resp => {
+            console.log(resp);
+            dispatch(setFavorites([...userFavorites, data.id]));
+            toggleFavor(true);
+        }).catch(err => {
+            console.log(err);
+            toggleFavor(false);
+        })
     }
 
     return (
         <View
-            onPress={() => {}}
             style={ row }
             >
             <Pressable
                 style={ link }
-                onPress={() => {alert('play')}}>
+                onPress={() => {
+                    navigation.navigate('CatalogScreen', {
+                        screen: 'Book',
+                        params: {
+                            id: data.id,
+                            name: data.title,
+                            data: data
+                        }
+                    });
+                }}>
                 <View style={ cover }>
                     {
                         data && data.cover ?
