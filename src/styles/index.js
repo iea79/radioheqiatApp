@@ -7,6 +7,7 @@ export default StyleSheet.create({
         paddingLeft: 25,
         paddingRight: 25,
         paddingBottom: 73,
+        backgroundColor:'#381466',
     },
     input: {
         fontSize: 14,
@@ -24,13 +25,15 @@ export default StyleSheet.create({
         color: '#FAB042',
     },
     btn: {
+        display: 'flex',
+        overflow: 'hidden',
         height: 60,
         padding: 20,
         fontSize: 16,
         textAlign: 'center',
         textTransform: 'uppercase',
         // background: 'linear-gradient(124.35deg, #F7D378 20.25%, #FAB042 82.84%)',
-        borderRadius: 100,
+        borderRadius: 30,
         fontWeight: 'bold',
         marginBottom: 20
     },

@@ -87,7 +87,7 @@ const LivePlayer = (props) => {
 
     const setNewPlayer = async () => {
         dispatch(setLive(false));
-        let player = await new Sound(audio, Sound.MAIN_BUNDLE, (error) => {
+        let player = await new Sound(audio, '', (error) => {
             if (error) {
                 console.log('failed to load the sound', error);
                 return;

@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Text, View, Pressable, Image } from 'react-native';
+import { Text, View, Pressable, Image, Button } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+// import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Welcome from '../screens/Welcome';
 import Home from '../screens/Home';
@@ -16,40 +17,46 @@ import BookScreen from '../screens/BookScreen';
 import ss from '../styles/index';
 
 const options = {
+    headerForceInset: {
+        top: 'never',
+        bottom: 'never'
+    },
+    headerBackTitleVisible: false,
     headerHideShadow: true,
     headerStyle: {
-        height: 60,
         backgroundColor:'#381466',
-        shadowColor: 'transparent',
     },
+    // headerBackground: Component,
+    headerShadowVisible: false,
     headerTitleStyle: {
+        // height: 70,
+        fontSize: 16,
         paddingLeft: 10,
         paddingRight: 10,
         color: '#ffffff',
+        lineHeight: 1,
+    },
+    cardStyle: {
+        backgroundColor: 'transparent'
     },
     headerTitleAlign: 'left',
     headerTintColor: '#ffffff',
-    cardStyle: {
-        backgroundColor: "#381466",
-    },
     headerRight: () => (
-        <Pressable
-            onPress={() => alert('This is a button!')}
-            title="Info"
-            style={ ss.userBtn }
-        >
-        <Image />
-        </Pressable>
+        <Button
+            onPress={() => {}}
+            title="User"
+            style={[ ss.btn, ss.btnBorder ]}
+        ></Button>
     ),
 };
 
-const HomeStack = createStackNavigator();
+const HomeStack = createNativeStackNavigator();
 
 const HomeStackScreen = ({ navigation, route }) => {
     return (
         <>
             <HomeStack.Navigator
-                initialRouteName={ 'Home' }
+                initialRouteName='Home'
                 screenOptions={options} >
                 <HomeStack.Screen
                     name="Home"
@@ -60,76 +67,68 @@ const HomeStackScreen = ({ navigation, route }) => {
     )
 }
 
-const WelcomStack = createStackNavigator();
+const WelcomStack = createNativeStackNavigator();
 
 const WelcomStackScreen = ({ navigation, route }) => {
     return (
-        <>
-            <WelcomStack.Navigator
-                screenOptions={options} >
-                <WelcomStack.Screen name="Welcome" component={ Welcome }  options={{
-                        headerShown: false
-                    }} />
-            </WelcomStack.Navigator>
-        </>
+        <WelcomStack.Navigator
+            initialRouteName='Welcome'
+            screenOptions={options} >
+            <WelcomStack.Screen name="Welcome" component={ Welcome }  options={{
+                    headerShown: false
+                }} />
+        </WelcomStack.Navigator>
     )
 }
 
-const AuthStack = createStackNavigator();
+const AuthStack = createNativeStackNavigator();
 
 const AuthStackScreen = () => {
     return (
-        <>
-            <AuthStack.Navigator
-                initialRouteName='Login'
-                screenOptions={options} >
-                <AuthStack.Screen name="Auth" component={ Login }  options={{ title: 'Ներս մտնել', headerTitleAlign: 'center' }} />
-                <AuthStack.Screen name="Registration" component={ Registration } options={{ title: 'Նոր հաշիվ', headerTitleAlign: 'center' }}  />
-            </AuthStack.Navigator>
-        </>
+        <AuthStack.Navigator
+            initialRouteName='Login'
+            screenOptions={options} >
+            <AuthStack.Screen name="Auth" component={ Login }  options={{ title: 'Ներս մտնել', headerTitleAlign: 'center' }} />
+            <AuthStack.Screen name="Registration" component={ Registration } options={{ title: 'Նոր հաշիվ', headerTitleAlign: 'center' }}  />
+        </AuthStack.Navigator>
     )
 }
 
-const FavoriteStack = createStackNavigator();
+const FavoriteStack = createNativeStackNavigator();
 
 const FavoriteStackScreen = () => {
     return (
-        <>
-            <FavoriteStack.Navigator
-                screenOptions={options} >
-                <FavoriteStack.Screen name="Favorite" component={ Favorite } options={{ title: 'Իմ գրքերը' }} />
-            </FavoriteStack.Navigator>
-        </>
+        <FavoriteStack.Navigator
+            initialRouteName='Favorite'
+            screenOptions={options} >
+            <FavoriteStack.Screen name="Favorite" component={ Favorite } options={{ title: 'Իմ գրքերը' }} />
+        </FavoriteStack.Navigator>
     )
 }
 
-const CatalogStack = createStackNavigator();
+const CatalogStack = createNativeStackNavigator();
 
 const CatalogStackScreen = () => {
     return (
-        <>
-            <CatalogStack.Navigator
-                initialRouteName='Categories'
-                screenOptions={options} >
-                <CatalogStack.Screen name="Categories" component={ Categories }  options={{ title: 'կատալոգ' }} />
-                <CatalogStack.Screen name="Category" component={ Category } options={({ route }) => ({ title: route.params.name })} />
-                <CatalogStack.Screen name="Book" component={ BookScreen }  options={({ route }) => ({ title: route.params.name })} />
-            </CatalogStack.Navigator>
-        </>
+        <CatalogStack.Navigator
+            initialRouteName='Categories'
+            screenOptions={options} >
+            <CatalogStack.Screen name="Categories" component={ Categories }  options={{ title: 'կատալոգ' }} />
+            <CatalogStack.Screen name="Category" component={ Category } options={({ route }) => ({ title: route.params.name })} />
+            <CatalogStack.Screen name="Book" component={ BookScreen }  options={({ route }) => ({ title: route.params.name })} />
+        </CatalogStack.Navigator>
     )
 }
 
-const SearchStack = createStackNavigator();
+const SearchStack = createNativeStackNavigator();
 
 const SearchStackScreen = () => {
     return (
-        <>
-            <SearchStack.Navigator
-                initialRouteName='Search'
-                screenOptions={options} >
-                <SearchStack.Screen name="Search" component={ Search }  options={{ title: 'Որոնում' }} />
-            </SearchStack.Navigator>
-        </>
+        <SearchStack.Navigator
+            initialRouteName='Search'
+            screenOptions={options} >
+            <SearchStack.Screen name="Search" component={ Search }  options={{ title: 'Որոնում' }} />
+        </SearchStack.Navigator>
     )
 }
 

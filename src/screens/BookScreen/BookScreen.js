@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     View, StyleSheet, Text, Pressable, Image,
-    ScrollView, useWindowDimensions, ImageBackground, StatusBar
+    ScrollView, useWindowDimensions, ImageBackground, StatusBar, ActivityIndicator
 } from 'react-native';
 import { SvgXml, SvgUri } from 'react-native-svg';
 import Sound from 'react-native-sound';
@@ -72,7 +72,7 @@ const BookScreen = ({ navigation, route }) => {
         // setTrackDuration('');
 
         if (!player && audio) {
-            const sound = new Sound(audio, Sound.MAIN_BUNDLE, (error) => {
+            const sound = new Sound(audio, '', (error) => {
                 if (error) {
                     console.log('failed to load the sound', error);
                     return;
@@ -133,7 +133,7 @@ const BookScreen = ({ navigation, route }) => {
         });
     },[]);
 
-    console.dir(SvgUri);
+    // console.dir(SvgUri);
     return (
         <ScrollView>
             <StatusBar
@@ -186,7 +186,13 @@ const BookScreen = ({ navigation, route }) => {
                                 source={ isPlay ? require('../../assets/img/pause.png') : require('../../assets/img/play.png') }
                                 />
                         </Pressable>
-                        <Text style={ styles.player.time }>{ trackTime }</Text>
+                        {
+                            trackTime ?
+                            <Text style={ styles.player.time }>{ trackTime }</Text>
+                            :
+                            <ActivityIndicator />
+                        }
+
                     </View>
                     <View style={ styles.autor, styles.top.author }>
                         <Text style={ styles.autor.label }>
@@ -218,10 +224,12 @@ const BookScreen = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
     wrapper: {
+        flex: 1,
         paddingTop: 0,
         paddingLeft: 25,
         paddingRight: 25,
         paddingBottom: 73,
+        backgroundColor:'#381466',
     },
     top: {
         paddingTop: 22,
