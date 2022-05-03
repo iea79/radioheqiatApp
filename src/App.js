@@ -9,7 +9,7 @@ import LivePlayer from './components/LivePlayer';
 import AutorizationService from './services/AutorizationService';
 import Welcome from './screens/Welcome';
 import Login from './screens/auth/Login';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 // import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeStackScreen, FavoriteStackScreen, CatalogStackScreen, SearchStackScreen, AuthStackScreen, WelcomStackScreen } from './navigate';
@@ -29,6 +29,18 @@ LogBox.ignoreLogs([
 const authService = new AutorizationService();
 const Tab = createBottomTabNavigator();
 const STYLES = ['default', 'dark-content', 'light-content'];
+const MyTheme = {
+  ...DefaultTheme,
+  dark: true,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#381466',
+    card: '#381466',
+    text: '#ffffff'
+  },
+};
+
+console.log('MyTheme', MyTheme);
 
 const App = ({ navigation, route }) => {
     const dispatch = useDispatch();
@@ -94,6 +106,10 @@ const App = ({ navigation, route }) => {
                     setTimeout(function () {
                         setLoaded(false);
                     }, 1000);
+                } else {
+                  setTimeout(function () {
+                      setLoaded(false);
+                  }, 1000);
                 }
             })
             .catch(err => {
@@ -102,12 +118,14 @@ const App = ({ navigation, route }) => {
             });
     }
 
+
     return (
-        <>
-            <StatusBar
-                backgroundColor="#381466"
-                 />
-            <NavigationContainer>
+            <NavigationContainer theme={MyTheme}>
+                <StatusBar
+                    hidden={false}
+                    backgroundColor="#381466"
+                    barStyle={'light-content'}
+                />
                 <Tab.Navigator
                     screenOptions={({ route }) => ({
                             headerShown: false,
@@ -141,55 +159,43 @@ const App = ({ navigation, route }) => {
                         !token ?
                             <Tab.Screen name="AuthScreens" component={AuthStackScreen} options={{ title: 'Իմ գրքերը' }} />
                             :
-                                <>
-                                    <Tab.Screen
-                                        name="HomeScreen"
-                                        component={HomeStackScreen}
-                                        options={{
-                                            // title: 'տուն',
-                                            // headerTitle: props => <LogoTitle {...props} />,
-                                            // headerRight: () => (
-                                            //     <Button
-                                            //         onPress={() => alert('This is a button!')}
-                                            //         title="Info"
-                                            //         color="#fff"
-                                            //     />
-                                            // ),
-                                        }}
-                                    />
-                                    <Tab.Screen
-                                        name="FavoriteScreen"
-                                        component={FavoriteStackScreen}
-                                        options={{ title: 'Իմ գրքերը' }}
-                                        listeners={({ navigation, route }) => ({
-                                            tabPress: e => {
-                                                console.log(route);
-                                                navigation.navigate('FavoriteScreen');
-                                            },
-                                        })}
-                                    />
-                                    <Tab.Screen
-                                        name="CatalogScreen"
-                                        component={CatalogStackScreen}
-                                        options={{ title: 'Կատալոգ' }}
-                                        listeners={({ navigation, route }) => ({
-                                            tabPress: e => {
-                                                console.log(e);
-                                                console.log(navigation);
-                                                console.log(route.name);
-                                                if (route.name && route.name === 'CatalogScreen' && route.name === 'Categories') {
-                                                    navigation.navigate('Categories');
-                                                }
-                                            },
-                                        })}
-                                    />
-                                    <Tab.Screen name="SearchScreen" component={SearchStackScreen} options={{ title: 'Որոնում' }} />
-                                </>
+                            <>
+                                <Tab.Screen
+                                    name="HomeScreen"
+                                    component={HomeStackScreen}
+                                    options={{ title: 'տուն' }}
+                                />
+                                <Tab.Screen
+                                    name="FavoriteScreen"
+                                    component={FavoriteStackScreen}
+                                    options={{ title: 'Իմ գրքերը' }}
+                                    listeners={({ navigation, route }) => ({
+                                        tabPress: e => {
+                                            console.log(route);
+                                            navigation.navigate('FavoriteScreen');
+                                        },
+                                    })}
+                                />
+                                <Tab.Screen
+                                    name="CatalogScreen"
+                                    component={CatalogStackScreen}
+                                    listeners={({ navigation, route }) => ({
+                                        tabPress: e => {
+                                            console.log(e);
+                                            console.log(navigation);
+                                            console.log(route.name);
+                                            if (route.name && route.name === 'CatalogScreen' && route.name === 'Categories') {
+                                                navigation.navigate('Categories');
+                                            }
+                                        },
+                                    })}
+                                />
+                                <Tab.Screen name="SearchScreen" component={SearchStackScreen} options={{ title: 'Որոնում' }} />
+                            </>
                     }
                 </Tab.Navigator>
                 { !loaded ? <LivePlayer /> : null }
             </NavigationContainer>
-        </>
     )
 }
 
