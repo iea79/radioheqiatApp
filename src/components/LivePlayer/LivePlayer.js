@@ -1,124 +1,176 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
-import SoundPlayer from 'react-native-sound-player';
+import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator, Keyboard } from 'react-native';
+// import SoundPlayer from 'react-native-sound-player';
+import Sound from 'react-native-sound';
+// import KeyboardListener from 'react-native-keyboard-listener';
 import RestService from '../../services/RestService';
 import { setLiveLoader, setLive, setBookPlayed, setLivePosition, setLiveDuration } from '../../actions/actions';
 
 const restService = new RestService();
 
+// let player;
+
 const LivePlayer = (props) => {
     const dispatch = useDispatch();
     const state = useSelector(state => state);
-    const { bookPlayed: { audio, authorName, cover, title }, live, livePaused, livePosition, liveDuration, token } = useSelector(state => state);
-    const [ isEnded, setIsEnded ] = useState(live);
-    const [ isPlaing, setIsPlaying ] = useState(false);
+    const {
+        bookPlayed: { audio, authorName, cover, title },
+        live, livePaused, livePosition, liveDuration, token
+    } = useSelector(state => state);
+    const [ isEnded, setIsEnded ] = useState(false);
+    const [ isPlaying, setIsPlaying ] = useState(false);
+    const [ isLoaded, setIsLoaded ] = useState(false);
+    const [ player, setPlayer ] = useState(null);
     const [ trackProgress, setTrackProgress ] = useState(0);
+    const [ trackDuration, setTrackDuration ] = useState(0);
+    const [ keyboardOpen, setKeyboardOpen ] = useState(false);
     const timerRef = useRef();
 
+    // console.log(player);
+    // console.dir(player);
     useEffect(() => {
-        if (token) {
-            if (audio) {
-                setIsPlaying(false);
-                SoundPlayer.loadUrl(audio);
-            } else {
-                getNextBook();
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                setKeyboardOpen(true); // or some other action
             }
-        }
-    }, [audio, token]);
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                setKeyboardOpen(false); // or some other action
+            }
+        );
 
-    useEffect(() => {
-        if (audio) {
-            // console.log(trackProgress);
-            if (live && !livePaused && token) {
-                // if (!isPlaing) {
-                // SoundPlayer.seek(trackProgress);
-                SoundPlayer.play();
-                setProgress();
-                // SoundPlayer.onFinishedPlaying = () => {
-                //     setIsEnded(true);
-                // };
-                // setIsPlaying(true);
-                // }
-                // setIsPlaying(false);
-            } else {
-                SoundPlayer.pause();
-                clearInterval(timerRef.current);
-                // setIsPlaying(false);
-            }
+        return () => {
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
         };
-    }, [live, livePaused, audio, token]);
-
-    useEffect(() => {
-        console.log('isEnded');
-        setTrackProgress(0);
-    },[isEnded]);
-
-    // useEffect(() => {
-    //     if (+trackProgress > 99) {
-    //         setTrackProgress(0);
-    //         getNextBook();
-    //     }
-    // },[trackProgress]);
-
-    const getTrackInfo = useCallback(async () => {
-        await SoundPlayer.getInfo().then(info => {
-            // console.log(info);
-            setTrackProgress(info.currentTime / info.duration * 100);
-        });
     }, []);
 
-    const setProgress = useCallback(() => {
-        clearInterval(timerRef.current);
-        timerRef.current = setInterval(() => {
-            // console.log('update');
-            getTrackInfo();
-        }, 1000);
+    useEffect(() => {
+        if (!audio) {
+            getNextBook();
+        }
     },[]);
+
+    useEffect(() => {
+        if (keyboardOpen) {
+            console.log('keyboardOpen');
+        }
+    },[keyboardOpen]);
+
+    useEffect(() => {
+        if (audio && !player) {
+            setNewPlayer();
+        }
+    },[audio]);
+
+    useEffect(() => {
+        if (player) {
+            if (isLoaded && live && !livePaused) {
+                playAudio();
+                setProgress();
+            } else {
+                player.pause();
+                clearInterval(timerRef.current);
+            }
+        }
+    }, [live, livePaused, isLoaded]);
+
+    useEffect(() => {
+        if (isEnded) {
+            getNextBook();
+        }
+    },[isEnded]);
+
+    const setNewPlayer = async () => {
+        dispatch(setLive(false));
+        let player = await new Sound(audio, Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log('failed to load the sound', error);
+                return;
+            } else {
+                setTrackDuration(player.getDuration() * 1000);
+                dispatch(setLive(true));
+                setIsLoaded(true);
+            }
+        });
+        setPlayer(player);
+    };
+
+    const playAudio = () => {
+        player.play((success) => {
+            if (success) {
+                console.log('successfully finished playing');
+                setIsEnded(true);
+            }
+        });
+    };
+
+    const setProgress = () => {
+        clearInterval(timerRef.current);
+
+        timerRef.current = setInterval(() => {
+            player.getCurrentTime(seconds => {
+                setTrackProgress((seconds*1000)/trackDuration * 100);
+            });
+        }, 1000);
+    };
 
     const getNextBook = useCallback(() => {
         console.log('getNextBook');
-        // setTrackProgress(0);
-        setIsPlaying(false);
+        clearInterval(timerRef.current);
 
         restService.getBooks('?orderby=rand').then(json => {
             console.log(json[0]);
+            setIsEnded(false);
+            setTrackDuration(0);
+            setTrackProgress(0);
+            setPlayer(null);
+            setIsLoaded(false);
             dispatch(setBookPlayed(json[0]));
         }).catch(() => {
-            // getNextBook();
+            getNextBook();
         });
     }, []);
-
-    // const percent = livePosition / liveDuration * 100 + '%';
 
     if (!token) {
         return <View></View>;
     }
 
-    if (!audio) {
-        return <View></View>;
-    }
-
     return (
-        <View style={styles.player}>
+        <View style={ keyboardOpen ? styles.player.notFly : styles.player }>
             <View style={styles.wrapper}>
                 <View style={styles.img}>
-                    <Image
-                        style={{width: '100%', height: '100%', borderRadius: 10}}
-                        source={{
-                            uri: cover
+                    {
+                        !isLoaded ?
+                        <ActivityIndicator />
+                        :
+                        <Image
+                            style={{width: '100%', height: '100%', borderRadius: 10}}
+                            source={{
+                                uri: cover
                         }} />
+                    }
                 </View>
-                <View style={styles.descript}>
-                    <Text style={styles.title}>
-                        { title }
-                    </Text>
-                    <Text style={styles.author}>
-                        { authorName }
-                    </Text>
-                </View>
+                {
+                    !isLoaded ?
+                    <ActivityIndicator style={styles.descript} />
+                    :
+                    <View style={styles.descript}>
+                        <Text style={styles.title}>
+                            { title }
+                        </Text>
+                        <Text style={styles.author}>
+                            { authorName }
+                        </Text>
+                    </View>
+                }
             </View>
             <Pressable
+                style={ styles.btn }
                 onPress={() => {
                     dispatch(setLive(!live));
                 }}
@@ -156,12 +208,28 @@ const styles = StyleSheet.create({
         padding: 16,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+
+        notFly: {
+            backgroundColor: '#702072',
+            color: '#FFFFFF',
+            position: 'absolute',
+            borderTopWidth: 1,
+            borderTopColor: '#915087',
+            borderTopStyle: 'solid',
+            left: 0,
+            bottom: 0,
+            width: '100%',
+            padding: 16,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+        }
     },
     wrapper: {
         alignItems: 'center',
         flexDirection: 'row',
-        flx: 1,
+        flexGrow: 1,
         marginRight: 17
     },
     title: {
@@ -176,6 +244,10 @@ const styles = StyleSheet.create({
     },
     descript: {},
     img: {
+        backgroundColor: '#9C83BC',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
         width: 42,
         height: 42,
         marginRight: 17
@@ -183,6 +255,7 @@ const styles = StyleSheet.create({
     btn: {
         width: 40,
         height: 40,
+        flex: 0,
     },
     progress: {
         backgroundColor: '#9C83BC',

@@ -2,6 +2,7 @@ import React, { useState, useLayoutEffect, useCallback } from 'react';
 import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import Slide from './Slide';
 import RestService from '../../services/RestService';
+import ss from '../../styles/index';
 
 // const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
@@ -38,27 +39,21 @@ const CategoriesSlider = ({ navigation, route }) => {
                     return <Slide data={item} navigation={navigation} route={route} />;
                 }}
             />
-            { !category.length ? <ActivityIndicator style={ styles.loader } /> : null }
+            { !category.length ? <ActivityIndicator style={ ss.loader } /> : null }
         </>
     )
 }
 
 const styles = StyleSheet.create({
     list: {
-        // flex: 1,
-        boxSizing: 'border-box',
-        height: 180,
+        // boxSizing: 'border-box',
+        minHeight: 180,
         alignSelf: 'flex-start',
         paddingLeft: 25,
-        // paddingRight: 10,
         marginRight: -25,
         marginLeft: -25,
         marginBottom: 46,
-        // height: 180
     },
-    loader: {
-        alignSelf: 'center'
-    }
 })
 
 export default CategoriesSlider;

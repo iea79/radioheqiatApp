@@ -1,27 +1,49 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { View, StyleSheet, Text, Pressable, Image, ScrollView, useWindowDimensions, ImageBackground } from 'react-native';
-// import SoundPlayer from 'react-native-sound-player';
+import {
+    View, StyleSheet, Text, Pressable, Image,
+    ScrollView, useWindowDimensions, ImageBackground, StatusBar
+} from 'react-native';
+import { SvgXml, SvgUri } from 'react-native-svg';
 import Sound from 'react-native-sound';
 import RenderHTML from "react-native-render-html";
 import ss from '../../styles/index';
 import { setLivePaused } from '../../actions/actions';
+import AutorizationService from '../../services/AutorizationService';
 
 // const player = new SoundPlayer();
-let player;
-Sound.setCategory('Playback');
+// let player;
+// Sound.setCategory('Playback');
+
+const authService = new AutorizationService();
+
+
 
 const BookScreen = ({ navigation, route }) => {
     // console.log(navigation);
-    // console.log(route.params.data);
+    console.log(route.params.data);
+    const bgGrade = `<svg width="100%" height="100%" viewBox="0 0 600 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="-14" width="100%" height="100%" fill="url(#paint0_linear_5_5115)"/>
+        <defs>
+            <linearGradient id="paint0_linear_5_5115" x1="187" y1="100" x2="259.856" y2="315.917" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#82278A"/>
+                <stop offset="1" stop-color="#6D2BD7"/>
+            </linearGradient>
+        </defs>
+    </svg>
+
+    `;
     const dispatch = useDispatch();
     const { width } = useWindowDimensions();
-    const { userFavorites, livePaused } = useSelector(state => state);
+    const { userFavorites, livePaused, userId, token } = useSelector(state => state);
     const { id, image, cover, authorName, authorRead, title, content, audio } = route.params.data;
+    const [ svgError, setSvgError ] = useState(false);
     const [ isPlay, togglePlay ] = useState(false);
+    const [ loaded, setLoaded ] = useState(false);
+    const [ player, setPlayer ] = useState(null);
     const [ favor, toggleFavor ] = useState(false);
     const [ trackTime, setTrackDuration ] = useState('');
-    const bg = { uri: image };
+    // const bg = ;
 
     useEffect(() => {
         navigation.setOptions({
@@ -37,26 +59,33 @@ const BookScreen = ({ navigation, route }) => {
                 color: '#ffffff',
             }
         });
-    }, []);
+        setPlayer(null);
+        setLoaded(false);
+        authService.addToHistoryList(userId, id, token).then(resp => {
+            console.log(resp);
+        });
+    }, [audio]);
 
     useEffect(() => {
         // See notes below about preloading sounds within initialization code below.
-        player = null;
-        setTrackDuration('');
+        // setPlayer(null);
+        // setTrackDuration('');
 
-        if (!player) {
-            player = new Sound(audio, Sound.MAIN_BUNDLE, (error) => {
+        if (!player && audio) {
+            const sound = new Sound(audio, Sound.MAIN_BUNDLE, (error) => {
                 if (error) {
                     console.log('failed to load the sound', error);
                     return;
                 }
+
+                // playAudio(player);
                 // loaded successfully
                 const playerTime = () => {
-                    const msc = new Date(player.getDuration() * 1000);
+                    const msc = new Date(sound.getDuration() * 1000);
                     console.log(msc);
                     let time = '';
 
-                    if (msc <= 360000) {
+                    if (msc <= 3600000) {
                         time = `${msc.getMinutes()}min ${msc.getSeconds()}sec`;
                     } else {
                         time = `${msc.getHours()}h ${msc.getMinutes()}min ${msc.getSeconds()}sec`;
@@ -65,20 +94,14 @@ const BookScreen = ({ navigation, route }) => {
                     return time;
                 }
                 setTrackDuration(playerTime);
+                setLoaded(true);
             });
+            setPlayer(sound);
         }
-    },[audio]);
-    // console.log(player);
-
-    useEffect(() => {
-        // console.log(audio);
-        // SoundPlayer.loadUrl(audio);
-        getTrackInfo();
-    },[audio]);
+    },[player, audio]);
 
     useEffect(() => {
         toggleFavor(false);
-        // console.log(userFavorites);
         if (userFavorites.length) {
             userFavorites.forEach(item => {
                 if (item == id) {
@@ -89,42 +112,49 @@ const BookScreen = ({ navigation, route }) => {
     },[id]);
 
     useEffect(() => {
-        if (isPlay) {
-            dispatch(setLivePaused(true));
-            player.play((success) => {
-                if (success) {
-                    console.log('successfully finished playing');
-                    dispatch(setLivePaused(false));
-                    togglePlay(false);
-                } else {
-                    console.log('playback failed due to audio decoding errors');
-                }
-            });
-        } else {
-            dispatch(setLivePaused(false));
-            player.pause();
+        if (player && player._loaded) {
+            if (isPlay) {
+                playAudio(player);
+            } else {
+                dispatch(setLivePaused(false));
+                player.pause();
+            }
         }
     },[isPlay]);
 
-    const getTrackInfo = useCallback(async () => {
-        // await SoundPlayer.getInfo().then(info => {
-        //     console.log(info);
-        //     setTrackDuration(info.duration);
-        //     // return info.duration;
-        // });
-        // const rezTime =
-        // return time.getMinutes() + 'min ' + time.getSeconds() + 'sec';
-        // return time + 'ms';
-    }, []);
+    const playAudio = useCallback((player) => {
+        dispatch(setLivePaused(true));
+        player.play((success) => {
+            if (success) {
+                console.log('successfully finished playing');
+                dispatch(setLivePaused(false));
+                togglePlay(false);
+            }
+        });
+    },[]);
 
+    console.dir(SvgUri);
     return (
         <ScrollView>
+            <StatusBar
+                backgroundColor="#82278A"
+                 />
             <View style={ styles.wrapper }>
-                <ImageBackground
+                <View
                     style={ styles.top }
-                    resizeMode={'contain'}
-                    source={bg}
                     >
+                    <View style={ styles.cover }>
+                        <SvgXml style={ styles.cover.bg } xml={bgGrade} />
+                        { image && !svgError ?
+                            <SvgUri
+                                onError={() => setSvgError(true)}
+                                style={ styles.cover.img }
+                                uri={ image }
+                            />
+                            :
+                            <Image style={ styles.cover.img } source={{ uri: cover }} />
+                        }
+                    </View>
                     <View style={ styles.head }>
                         <Text style={ styles.title }>
                             { title }
@@ -145,6 +175,7 @@ const BookScreen = ({ navigation, route }) => {
                     <View style={ styles.player }>
                         <Pressable
                             style={ styles.player.btn }
+                            disabled={!loaded}
                             onPress={() => {
                                 togglePlay(!isPlay);
                                 // dispatch(setLive(!live));
@@ -163,7 +194,7 @@ const BookScreen = ({ navigation, route }) => {
                         </Text>
                         <Text style={ styles.autor.name }>{ authorName }</Text>
                     </View>
-                </ImageBackground>
+                </View>
                 <View style={ styles.cats }>
                     <View style={ styles.cat }>
                     </View>
@@ -236,6 +267,7 @@ const styles = StyleSheet.create({
     player: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginBottom: 20,
         // flex: 1,
 
         btn: {
@@ -253,19 +285,26 @@ const styles = StyleSheet.create({
             color: '#D9A7FF'
         },
     },
-    // cover: {
-    //     position: 'absolute',
-    //     backgroundColor: '#82278A',
-    //     top: 0,
-    //     left: 0,
-    //     right: 0,
-    //     bottom: 0,
-    //
-    //     img: {
-    //         width: '100%',
-    //         height: '100%',
-    //     }
-    // },
+    cover: {
+        position: 'absolute',
+        backgroundColor: '#82278A',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end',
+
+        img: {
+            width: '100%',
+            height: '100%',
+        },
+        bg: {
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+        }
+    },
     autor: {
         fontSize: 12,
         label: {

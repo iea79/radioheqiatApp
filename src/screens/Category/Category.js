@@ -80,7 +80,7 @@ const Category = ({ route, navigation }) => {
                     }}
                     />
             }
-            { loaded ? <ActivityIndicator style={ styles.loader } /> : null }
+            { loaded ? <ActivityIndicator style={ ss.loader } /> : null }
         </View>
     )
 };

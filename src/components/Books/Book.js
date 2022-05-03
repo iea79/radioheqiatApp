@@ -28,11 +28,16 @@ const Book = ({ data, navigation, route }) => {
     },[favor]);
 
     const toggleFavorite = async () => {
-        toggleFavor(!favor);
+        // toggleFavor(!favor);
         await authService.addToFavoritList(userId, data.id, token).then(resp => {
             console.log(resp);
-            dispatch(setFavorites([...userFavorites, data.id]));
-            toggleFavor(true);
+            dispatch(setFavorites(resp.data));
+            if (resp.status === 'deleted') {
+                toggleFavor(false);
+
+            } else {
+                toggleFavor(true);
+            }
         }).catch(err => {
             console.log(err);
             toggleFavor(false);
@@ -115,6 +120,7 @@ const styles = StyleSheet.create({
     },
     descript: {
         paddingLeft: 12,
+        paddingRight: 40,
     },
     favorite: {
         width: 18,

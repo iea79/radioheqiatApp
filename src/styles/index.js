@@ -57,5 +57,18 @@ export default StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    loader: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    userBtn: {
+        marginRight: 20,
+        marginLeft: 20,
     }
 });

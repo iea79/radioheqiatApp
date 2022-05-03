@@ -36,7 +36,7 @@ const Categories = ({ navigation }) => {
                     />;
                 }}
             />
-            { !category.length ? <ActivityIndicator style={ styles.loader } /> : null }
+        { !category.length ? <ActivityIndicator style={ ss.loader } /> : null }
         </View>
     )
 }

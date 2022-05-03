@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Text, View, LogBox } from 'react-native';
+import { Text, View, Pressable, Image } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,13 +13,14 @@ import Registration from '../screens/auth/Registration';
 import Categories from '../screens/Categories';
 import Category from '../screens/Category';
 import BookScreen from '../screens/BookScreen';
+import ss from '../styles/index';
 
 const options = {
     headerHideShadow: true,
     headerStyle: {
         height: 60,
         backgroundColor:'#381466',
-        shadowColor: 'transparent'
+        shadowColor: 'transparent',
     },
     headerTitleStyle: {
         paddingLeft: 10,
@@ -31,6 +32,15 @@ const options = {
     cardStyle: {
         backgroundColor: "#381466",
     },
+    headerRight: () => (
+        <Pressable
+            onPress={() => alert('This is a button!')}
+            title="Info"
+            style={ ss.userBtn }
+        >
+        <Image />
+        </Pressable>
+    ),
 };
 
 const HomeStack = createStackNavigator();

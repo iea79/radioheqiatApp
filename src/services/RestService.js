@@ -47,15 +47,15 @@ export default class RestService {
         let arr = '';
         if (ids) {
             ids.forEach((item) => {
-                arr += `include[]=${item}&`;
+                arr += `${item},`;
             });
             console.log(arr);
         }
-        const list = await fetch(`${this._wprest}/books?${arr}`)
+        const list = await fetch(`${this._wprest}/books?include=${arr}`)
 
-        // console.log(list);
+        const data = await list.json();
 
-        return await list.json();
+        return await this.mapBookArray(data);
     }
 
     async getBooksCategories(params = '') {
@@ -136,6 +136,16 @@ export default class RestService {
         const res = await fetch(`${this._wprest}/appmenu`)
 
         return res.json();
+    }
+
+    async getSearchData(data) {
+        const list = await fetch(`${this._wprest}/books?search=${data}&per_page=20`);
+
+        const arr = await list.json();
+
+        console.log(arr);
+
+        return await this.mapBookArray(arr);
     }
 
 }
