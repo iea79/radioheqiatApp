@@ -10,10 +10,7 @@ import AutorizationService from './services/AutorizationService';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeStackScreen, FavoriteStackScreen, CatalogStackScreen, SearchStackScreen, AuthStackScreen, WelcomStackScreen } from './navigate';
-<<<<<<< HEAD
-=======
 import { navigationRef } from './navigate/RootNavigation';
->>>>>>> 8881fe7f5c0efad593e064cb1c0f12fe507c3468
 
 LogBox.ignoreLogs([
     "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
@@ -167,21 +164,9 @@ const App = () => {
                                 <Tab.Screen
                                     name="CatalogScreen"
                                     component={CatalogStackScreen}
-<<<<<<< HEAD
-                                    options={{ title: 'Կատալոգ' }}
-                                    listeners={({ navigation, route }) => ({
-                                        tabPress: e => {
-                                            console.log(e);
-                                            console.log(navigation);
-                                            console.log(route.name);
-                                            if (route.name && route.name === 'CatalogScreen' && route.name === 'Categories') {
-                                                navigation.navigate('Categories');
-                                            }
-=======
                                     listeners={() => ({
                                         tabPress: () => {
                                             navigationRef.navigate('CatalogScreen', {screen: 'Categories'});
->>>>>>> 8881fe7f5c0efad593e064cb1c0f12fe507c3468
                                         },
                                     })}
                                 />
@@ -189,11 +174,7 @@ const App = () => {
                             </>
                     }
                 </Tab.Navigator>
-<<<<<<< HEAD
-                { !loaded && token ? <LivePlayer /> : null }
-=======
                 { liveLoader && token ? <LivePlayer /> : null }
->>>>>>> 8881fe7f5c0efad593e064cb1c0f12fe507c3468
             </NavigationContainer>
     )
 }
