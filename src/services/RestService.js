@@ -1,5 +1,3 @@
-const AUTH_KEY_VALUE = 'radioheqatOnline2022';
-
 export default class RestService {
 
     // _wprest = 'http://radioheqatrest.frontendie.ru/wp-json/wp/v2';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, FlatList, ActivityIndicator } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import AutorizationService from '../../services/AutorizationService';
 import RestService from '../../services/RestService';
 import ss from '../../styles/index';
@@ -11,7 +11,6 @@ const restService = new RestService();
 
 const Favorite = ({ navigation, route }) => {
     console.log('Favorite', route);
-    const dispatch = useDispatch();
     const { userId, token, userFavorites } = useSelector(state => state);
     // const state = useSelector(state => state);
     const [ favorite, toggleFavorite ] = useState(true);
@@ -49,45 +48,42 @@ const Favorite = ({ navigation, route }) => {
         })
     }
 
-    const toggleContent = () => {
-        if (favorite) setFavorite();
-        if (history) setHistory();
-    };
-
     return (
         <View style={ ss.content }>
-            <View style={ styles.tabs }>
-                <Pressable
-                    style={ styles.tab }
-                    disabled={favorite}
-                    onPress={() => {
-                        toggleFavorite(true);
-                        toggleHistory(false);
+            <View style={{  paddingBottom: 105 }}>
+                <View style={ styles.tabs }>
+                    <Pressable
+                        style={ styles.tab }
+                        disabled={favorite}
+                        onPress={() => {
+                            toggleFavorite(true);
+                            toggleHistory(false);
+                        }}
+                    >
+                        <Text style={ favorite ? styles.tab.nameCurrent : styles.tab.name }>Պատմություն</Text>
+                    </Pressable>
+                    <Pressable
+                        style={ styles.tab }
+                        disabled={history}
+                        onPress={() => {
+                            toggleHistory(true);
+                            toggleFavorite(false);
+                        }}
+                    >
+                        <Text style={ history ? styles.tab.nameCurrent : styles.tab.name }>Ֆավորիտներ</Text>
+                    </Pressable>
+                </View>
+                <FlatList
+                    data={ data }
+                    style={ styles.list }
+                    renderItem={({ item }) => {
+                        return <Book
+                            data={item} navigation={ navigation }
+                            />;
                     }}
-                >
-                    <Text style={ favorite ? styles.tab.nameCurrent : styles.tab.name }>Պատմություն</Text>
-                </Pressable>
-                <Pressable
-                    style={ styles.tab }
-                    disabled={history}
-                    onPress={() => {
-                        toggleHistory(true);
-                        toggleFavorite(false);
-                    }}
-                >
-                    <Text style={ history ? styles.tab.nameCurrent : styles.tab.name }>Ֆավորիտներ</Text>
-                </Pressable>
+                    />
+                { !data.length ? <ActivityIndicator style={ ss.loader } /> : null }
             </View>
-            <FlatList
-                data={ data }
-                style={ styles.list }
-                renderItem={({ item }) => {
-                    return <Book
-                        data={item} navigation={ navigation }
-                        />;
-                }}
-                />
-            { !data.length ? <ActivityIndicator style={ ss.loader } /> : null }
         </View>
     )
 }
@@ -115,6 +111,12 @@ const styles = StyleSheet.create({
             // borderBottomStyle: 'solid',
             borderBottomColor: '#F6D378'
         }
+    },
+    list: {
+        marginLeft: -26,
+        marginRight: -26,
+        paddingLeft: 26,
+        paddingRight: 26,
     }
 })
 

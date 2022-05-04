@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable, Image, FlatList, ActivityIndicator } from 'react-native';
+import { View, TextInput, StyleSheet, Pressable, Image, FlatList, ActivityIndicator } from 'react-native';
 import ss from '../../styles/index';
 import RestService from '../../services/RestService';
 import Book from '../../components/Books/Book';
 
 const restService = new RestService();
 
-const Search = ({ navigation, route }) => {
+const Search = ({ navigation }) => {
     const [ search, setSearch ] = useState('');
     const [ loader, toggleLoader ] = useState(false);
     const [ data, setData ] = useState('');

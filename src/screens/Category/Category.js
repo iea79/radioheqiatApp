@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { View, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, FlatList, ActivityIndicator } from 'react-native';
 import ss from '../../styles';
 import RestService from '../../services/RestService';
 import CategorySub from '../../components/CategorySub';
@@ -9,18 +8,13 @@ import Book from '../../components/Books/Book';
 const restService = new RestService();
 
 const Category = ({ route, navigation }) => {
-    console.log('Category');
-    const dispatch = useDispatch();
-    const state = useSelector(state => state);
     const { id } = route.params;
-    console.log(route.params);
-    // console.log(itemId);
+    console.log(route.name);
     const [ parent, setParent ] = useState([]);
     const [ loaded, setLoaded ] = useState(true);
     const [ books, setBooks ] = useState([]);
 
     useEffect(() => {
-        console.log('route change');
         setParent([]);
         setBooks([]);
         setLoaded(true);
@@ -56,39 +50,42 @@ const Category = ({ route, navigation }) => {
         })
     }, [route]);
 
-    return (
-        <View style={ ss.content }>
-            {
-                parent.length ?
+    const renderContent = () => {
+        if (parent.length) {
+            return (
                 <FlatList
                     data={ parent }
-                    style={ styles.list }
+                    style={ ss.content }
                     renderItem={({ item }) => {
                         return <CategorySub
                             data={item} navigation={ navigation } route={ route }
                         />;
                     }}
                     />
-                :
+            )
+        }
+        if (books.length) {
+            return (
                 <FlatList
                     data={ books }
-                    style={ styles.list }
+                    style={ ss.content }
                     renderItem={({ item }) => {
                         return <Book
                             data={item} navigation={ navigation }  route={ route }
                         />;
                     }}
                     />
+            )
+        }
+    }
+
+    return (
+        <View style={ ss.beforePlayer }>
+            {
+                loaded ? <ActivityIndicator style={ ss.loader } /> : renderContent()
             }
-            { loaded ? <ActivityIndicator style={ ss.loader } /> : null }
         </View>
     )
 };
-
-const styles = StyleSheet.create({
-    list: {
-        flex: 0
-    }
-})
 
 export default Category;

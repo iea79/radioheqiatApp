@@ -17,22 +17,18 @@ import AutorizationService from '../../services/AutorizationService';
 
 const authService = new AutorizationService();
 
+const bgGrade = `<svg width="100%" height="100%" viewBox="0 0 600 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="-14" width="100%" height="100%" fill="url(#paint0_linear_5_5115)"/>
+    <defs>
+        <linearGradient id="paint0_linear_5_5115" x1="187" y1="100" x2="259.856" y2="315.917" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#82278A"/>
+            <stop offset="1" stop-color="#6D2BD7"/>
+        </linearGradient>
+    </defs>
+</svg>`;
 
 
 const BookScreen = ({ navigation, route }) => {
-    // console.log(navigation);
-    console.log(route.params.data);
-    const bgGrade = `<svg width="100%" height="100%" viewBox="0 0 600 450" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="-14" width="100%" height="100%" fill="url(#paint0_linear_5_5115)"/>
-        <defs>
-            <linearGradient id="paint0_linear_5_5115" x1="187" y1="100" x2="259.856" y2="315.917" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#82278A"/>
-                <stop offset="1" stop-color="#6D2BD7"/>
-            </linearGradient>
-        </defs>
-    </svg>
-
-    `;
     const dispatch = useDispatch();
     const { width } = useWindowDimensions();
     const { userFavorites, livePaused, userId, token } = useSelector(state => state);
@@ -43,7 +39,6 @@ const BookScreen = ({ navigation, route }) => {
     const [ player, setPlayer ] = useState(null);
     const [ favor, toggleFavor ] = useState(false);
     const [ trackTime, setTrackDuration ] = useState('');
-    // const bg = ;
 
     useEffect(() => {
         navigation.setOptions({
@@ -67,10 +62,6 @@ const BookScreen = ({ navigation, route }) => {
     }, [audio]);
 
     useEffect(() => {
-        // See notes below about preloading sounds within initialization code below.
-        // setPlayer(null);
-        // setTrackDuration('');
-
         if (!player && audio) {
             const sound = new Sound(audio, '', (error) => {
                 if (error) {
@@ -78,27 +69,17 @@ const BookScreen = ({ navigation, route }) => {
                     return;
                 }
 
-                // playAudio(player);
-                // loaded successfully
                 const playerTime = () => {
                     const msc = new Date(sound.getDuration() * 1000);
-                    console.log(msc);
-                    let time = '';
 
-                    if (msc <= 3600000) {
-                        time = `${msc.getMinutes()}min ${msc.getSeconds()}sec`;
-                    } else {
-                        time = `${msc.getHours()}h ${msc.getMinutes()}min ${msc.getSeconds()}sec`;
-                    }
-
-                    return time;
+                    return msc <= 3600000 ? `${msc.getMinutes()}min ${msc.getSeconds()}sec` : `${msc.getHours()}h ${msc.getMinutes()}min ${msc.getSeconds()}sec`;
                 }
                 setTrackDuration(playerTime);
                 setLoaded(true);
             });
             setPlayer(sound);
         }
-    },[player, audio]);
+    }, [player, audio]);
 
     useEffect(() => {
         toggleFavor(false);
@@ -133,7 +114,6 @@ const BookScreen = ({ navigation, route }) => {
         });
     },[]);
 
-    // console.dir(SvgUri);
     return (
         <ScrollView>
             <StatusBar
@@ -144,7 +124,7 @@ const BookScreen = ({ navigation, route }) => {
                     style={ styles.top }
                     >
                     <View style={ styles.cover }>
-                        <SvgXml style={ styles.cover.bg } xml={bgGrade} />
+                        <SvgXml style={ styles.cover.bg } xml={ bgGrade } />
                         { image && !svgError ?
                             <SvgUri
                                 onError={() => setSvgError(true)}
@@ -241,13 +221,10 @@ const styles = StyleSheet.create({
         marginBottom: 30,
         minHeight: 300,
         backgroundColor: '#82278A',
-        // justifyContent: "flex-end",
-        // alignItems: "flex-end",
 
         author: {
             flex: 1,
             justifyContent: 'flex-end',
-            // alignItems: 'flex-end'
         }
     },
     head: {
@@ -276,7 +253,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 20,
-        // flex: 1,
 
         btn: {
             width: 47,
@@ -324,8 +300,6 @@ const styles = StyleSheet.create({
             fontWeight: 'bold',
         }
     },
-    cats: {},
-    cat: {},
     text: {
         marginBottom: 20,
 

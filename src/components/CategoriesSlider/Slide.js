@@ -1,28 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import { Text, StyleSheet, Image, Pressable } from 'react-native';
 
-const Slide = ({ data, navigation, route }) => {
-    // console.log(data);
-    // console.log(navigation);
-    // console.log(route);
+const Slide = ({ data, navigation }) => {
     const { slide, img, title } = styles;
-    const { id, name, media: { cover_small, lotty } } = data;
-
-    const setCover = () => {
-        // if (lotty) {
-        //     return <LottieView source={{
-        //             // uri: lotty
-        //         }} autoPlay loop resizeMode="center"/>
-        // } else {
-        // }
-        if (cover_small) {
-            return <Image
-                resizeMode={'cover'}
-                source={{ uri: cover_small }}
-                style={ img }
-                ></Image>
-        }
-    }
+    const { id, name, media: { cover_small } } = data;
 
     return (
         <Pressable
@@ -37,7 +18,14 @@ const Slide = ({ data, navigation, route }) => {
             }}
             style={ slide }
             >
-            {setCover()}
+            { cover_small ?
+                <Image
+                    resizeMode={'cover'}
+                    source={{ uri: cover_small }}
+                    style={ img }
+                ></Image>
+                : null
+            }
             <Text style={ title }>{data.name}</Text>
         </Pressable>
     );

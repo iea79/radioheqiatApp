@@ -23,7 +23,7 @@ const CategoriesSlider = ({ navigation, route }) => {
             restService.getBooksCategories('').then(json => {
                 // console.log(json);
                 setCategory(json);
-            }).catch(err => {
+            }).catch(() => {
                 setCategory([]);
             });
         }

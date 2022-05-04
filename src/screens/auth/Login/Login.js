@@ -80,7 +80,6 @@ const Login = ({ navigation }) => {
             }).catch(err => {
                 console.log('validateToken === ', err);
                 setLoader(false);
-                // Alert.alert(err);
             });
         } else {
             setLoader(false);

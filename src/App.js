@@ -1,23 +1,16 @@
 import 'react-native-gesture-handler';
-import React, { useLayoutEffect, useState, useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LogBox, Image, StatusBar } from 'react-native';
-import { setMessage, setBookPlayed, setLive, setLivePaused, setLivePosition, setFavorites, setLiveLoader, getToken, setEmail, setName, setUserId } from './actions/actions';
+import { setBookPlayed, setLive, setLivePaused, setLiveLoader, setFavorites, getToken, setEmail, setName, setUserId } from './actions/actions';
 import ss from './styles/index';
 import LivePlayer from './components/LivePlayer';
 import AutorizationService from './services/AutorizationService';
-import Welcome from './screens/Welcome';
-import Login from './screens/auth/Login';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-// import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeStackScreen, FavoriteStackScreen, CatalogStackScreen, SearchStackScreen, AuthStackScreen, WelcomStackScreen } from './navigate';
-// import SplashScreen from 'react-native-splash-screen';
-
-// console.log(LogBox);
-
-// LogBox.ignoreAllLogs();
+import { navigationRef } from './navigate/RootNavigation';
 
 LogBox.ignoreLogs([
     "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
@@ -28,7 +21,7 @@ LogBox.ignoreLogs([
 
 const authService = new AutorizationService();
 const Tab = createBottomTabNavigator();
-const STYLES = ['default', 'dark-content', 'light-content'];
+// const STYLES = ['default', 'dark-content', 'light-content'];
 const MyTheme = {
   ...DefaultTheme,
   dark: true,
@@ -42,11 +35,10 @@ const MyTheme = {
 
 console.log('MyTheme', MyTheme);
 
-const App = ({ navigation, route }) => {
+const App = () => {
     const dispatch = useDispatch();
-    const store = useSelector(state => state);
-    const { live, token } = useSelector(state => state);
-    const [ loaded, setLoaded ] = useState(true);
+    const { live, token, liveLoader } = useSelector(state => state);
+    // const [ loaded, setLoaded ] = useState(liveLoader);
 
     if (live === undefined) {
         dispatch(setBookPlayed([]));
@@ -54,17 +46,14 @@ const App = ({ navigation, route }) => {
         dispatch(setLivePaused(false));
         dispatch(getToken(false));
         dispatch(setFavorites([]));
-        // dispatch(setLiveLoader(true));
     }
     useEffect(() => {
-        if (loaded) {
+        if (!liveLoader) {
             checkToken();
         }
-    },[loaded]);
+    },[liveLoader]);
 
     useEffect(() => {
-        console.log('App === ', store);
-
         if (token) {
             checkUser();
         }
@@ -72,55 +61,45 @@ const App = ({ navigation, route }) => {
 
     const checkUser = async () => {
         await authService.validateToken(token).then(resp => {
-            console.log('validete then === ', resp);
-            console.log(resp);
             const { ID, display_name, user_email } = resp.data.user;
             dispatch(setUserId(ID));
             dispatch(setName(display_name));
             dispatch(setEmail(user_email));
 
             authService.getFavoriteList(ID, token).then(resp => {
-                console.log('Home getFavoriteList ===', resp);
                 dispatch(setFavorites(resp.data));
-            }).catch(err => {
-                console.log('Home getFavoriteList === ', err);
+            }).catch(() => {
                 dispatch(setFavorites([]));
             });
             setTimeout(function () {
-                setLoaded(false);
+                dispatch(setLiveLoader(true));
             }, 500);
-        }).catch(err => {
+        }).catch(() => {
             dispatch(getToken(false));
             AsyncStorage.removeItem('token');
         })
     }
 
     const checkToken = async () => {
-        console.log('checkToken');
         await AsyncStorage.getItem('token')
-            .then(token => {
-                console.log('checkToken then === ', token);
-                if (token && token !== false && token !== undefined) {
-                    console.log('checkToken set token');
-                    dispatch(getToken(token));
-                    setTimeout(function () {
-                        setLoaded(false);
-                    }, 1000);
-                } else {
-                  setTimeout(function () {
-                      setLoaded(false);
-                  }, 1000);
-                }
-            })
-            .catch(err => {
-                console.log('checkToken err === ', err);
-                console.log(err);
-            });
+        .then(token => {
+            if (token && token !== false && token !== undefined) {
+                dispatch(getToken(token));
+                setTimeout(function () {
+                    dispatch(setLiveLoader(true));
+                }, 1000);
+            } else {
+                setTimeout(function () {
+                    dispatch(setLiveLoader(true));
+                }, 1000);
+            }
+        })
+        .catch(() => {
+        });
     }
 
-
     return (
-            <NavigationContainer theme={MyTheme}>
+            <NavigationContainer theme={MyTheme} ref={navigationRef}>
                 <StatusBar
                     hidden={false}
                     backgroundColor="#381466"
@@ -153,7 +132,7 @@ const App = ({ navigation, route }) => {
                         }
                     )}
                     >
-                    { loaded ?
+                    { !liveLoader ?
                         <Tab.Screen name="WelcomScreen" component={WelcomStackScreen} options={{ title: '' }} />
                         :
                         !token ?
@@ -164,29 +143,28 @@ const App = ({ navigation, route }) => {
                                     name="HomeScreen"
                                     component={HomeStackScreen}
                                     options={{ title: 'տուն' }}
+                                    listeners={() => ({
+                                        tabPress: () => {
+                                            navigationRef.navigate('HomeScreen', {screen: 'Home'});
+                                        },
+                                    })}
                                 />
                                 <Tab.Screen
                                     name="FavoriteScreen"
                                     component={FavoriteStackScreen}
                                     options={{ title: 'Իմ գրքերը' }}
-                                    listeners={({ navigation, route }) => ({
-                                        tabPress: e => {
-                                            console.log(route);
-                                            navigation.navigate('FavoriteScreen');
+                                    listeners={() => ({
+                                        tabPress: () => {
+                                            navigationRef.navigate('FavoriteScreen', {screen: 'Favorite'});
                                         },
                                     })}
                                 />
                                 <Tab.Screen
                                     name="CatalogScreen"
                                     component={CatalogStackScreen}
-                                    listeners={({ navigation, route }) => ({
-                                        tabPress: e => {
-                                            console.log(e);
-                                            console.log(navigation);
-                                            console.log(route.name);
-                                            if (route.name && route.name === 'CatalogScreen' && route.name === 'Categories') {
-                                                navigation.navigate('Categories');
-                                            }
+                                    listeners={() => ({
+                                        tabPress: () => {
+                                            navigationRef.navigate('CatalogScreen', {screen: 'Categories'});
                                         },
                                     })}
                                 />
@@ -194,7 +172,7 @@ const App = ({ navigation, route }) => {
                             </>
                     }
                 </Tab.Navigator>
-                { !loaded ? <LivePlayer /> : null }
+                { liveLoader && token ? <LivePlayer /> : null }
             </NavigationContainer>
     )
 }

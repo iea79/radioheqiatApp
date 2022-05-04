@@ -1,25 +1,21 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator, Keyboard } from 'react-native';
-// import SoundPlayer from 'react-native-sound-player';
 import Sound from 'react-native-sound';
-// import KeyboardListener from 'react-native-keyboard-listener';
 import RestService from '../../services/RestService';
-import { setLiveLoader, setLive, setBookPlayed, setLivePosition, setLiveDuration } from '../../actions/actions';
+import { setLive, setBookPlayed } from '../../actions/actions';
 
 const restService = new RestService();
 
-// let player;
-
-const LivePlayer = (props) => {
+const LivePlayer = ({ route }) => {
     const dispatch = useDispatch();
-    const state = useSelector(state => state);
     const {
-        bookPlayed: { audio, authorName, cover, title },
-        live, livePaused, livePosition, liveDuration, token
+        bookPlayed: {
+            audio, authorName, cover, title
+        },
+        live, livePaused, token
     } = useSelector(state => state);
     const [ isEnded, setIsEnded ] = useState(false);
-    const [ isPlaying, setIsPlaying ] = useState(false);
     const [ isLoaded, setIsLoaded ] = useState(false);
     const [ player, setPlayer ] = useState(null);
     const [ trackProgress, setTrackProgress ] = useState(0);
@@ -27,39 +23,21 @@ const LivePlayer = (props) => {
     const [ keyboardOpen, setKeyboardOpen ] = useState(false);
     const timerRef = useRef();
 
-    // console.log(player);
-    // console.dir(player);
     useEffect(() => {
-        const keyboardDidShowListener = Keyboard.addListener(
-            'keyboardDidShow',
-            () => {
-                setKeyboardOpen(true); // or some other action
-            }
-        );
-        const keyboardDidHideListener = Keyboard.addListener(
-            'keyboardDidHide',
-            () => {
-                setKeyboardOpen(false); // or some other action
-            }
-        );
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setKeyboardOpen(true));
+        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setKeyboardOpen(false));
 
         return () => {
             keyboardDidHideListener.remove();
             keyboardDidShowListener.remove();
         };
-    }, []);
+    }, [route]);
 
     useEffect(() => {
         if (!audio) {
             getNextBook();
         }
     },[]);
-
-    useEffect(() => {
-        if (keyboardOpen) {
-            console.log('keyboardOpen');
-        }
-    },[keyboardOpen]);
 
     useEffect(() => {
         if (audio && !player) {
