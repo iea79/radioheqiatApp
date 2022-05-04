@@ -10,20 +10,15 @@ import AutorizationService from './services/AutorizationService';
 import Welcome from './screens/Welcome';
 import Login from './screens/auth/Login';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-// import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeStackScreen, FavoriteStackScreen, CatalogStackScreen, SearchStackScreen, AuthStackScreen, WelcomStackScreen } from './navigate';
-// import SplashScreen from 'react-native-splash-screen';
-
-// console.log(LogBox);
-
-// LogBox.ignoreAllLogs();
 
 LogBox.ignoreLogs([
     "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
     'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.',
     'new NativeEventEmitter',
-    'Remote debugger'
+    'Remote debugger',
+    'Can\'t perform a React state',
 ]);
 
 const authService = new AutorizationService();
@@ -36,6 +31,7 @@ const MyTheme = {
     ...DefaultTheme.colors,
     background: '#381466',
     card: '#381466',
+    primary: '#381466',
     text: '#ffffff'
   },
 };
@@ -179,6 +175,7 @@ const App = ({ navigation, route }) => {
                                 <Tab.Screen
                                     name="CatalogScreen"
                                     component={CatalogStackScreen}
+                                    options={{ title: 'Կատալոգ' }}
                                     listeners={({ navigation, route }) => ({
                                         tabPress: e => {
                                             console.log(e);
@@ -194,7 +191,7 @@ const App = ({ navigation, route }) => {
                             </>
                     }
                 </Tab.Navigator>
-                { !loaded ? <LivePlayer /> : null }
+                { !loaded && token ? <LivePlayer /> : null }
             </NavigationContainer>
     )
 }
