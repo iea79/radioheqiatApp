@@ -6,8 +6,12 @@ export default StyleSheet.create({
         paddingTop: 20,
         paddingLeft: 25,
         paddingRight: 25,
-        paddingBottom: 73,
+        paddingBottom: 20,
         backgroundColor:'#381466',
+    },
+    beforePlayer: {
+        flex: 1,
+        paddingBottom: 73,
     },
     input: {
         fontSize: 14,
@@ -31,6 +35,7 @@ export default StyleSheet.create({
         padding: 20,
         fontSize: 16,
         textAlign: 'center',
+        alignItems: 'center',
         textTransform: 'uppercase',
         // background: 'linear-gradient(124.35deg, #F7D378 20.25%, #FAB042 82.84%)',
         borderRadius: 30,
@@ -41,10 +46,17 @@ export default StyleSheet.create({
         backgroundColor: '#FAB042',
         color: '#ffffff',
     },
+    btnPrimary: {
+        backgroundColor: '#58318C',
+        color: '#ffffff',
+    },
     btnBorder: {
         borderWidth: 2,
         borderColor: '#FAB042',
         color: '#FAB042',
+    },
+    btnSmall: {
+        fontSize: 12
     },
     tabBarStyle: {
         paddingTop: 12,

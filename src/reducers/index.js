@@ -69,6 +69,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 token: false,
+                liveLoader: null,
                 userId: null,
                 userEmail: '',
                 userPhone: '',

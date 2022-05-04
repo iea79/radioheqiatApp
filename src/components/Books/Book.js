@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import AutorizationService from '../../services/AutorizationService';
@@ -6,16 +6,12 @@ import { setFavorites } from '../../actions/actions';
 
 const authService = new AutorizationService();
 
-const Book = ({ data, navigation, route }) => {
+const Book = ({ data, navigation }) => {
     const { row, link, cover, img, title, descript, favorite, foot } = styles;
     const [ favor, toggleFavor ] = useState(false);
 
     const dispatch = useDispatch();
     const { token, userId, userFavorites } = useSelector(state => state);
-    const state = useSelector(state => state);
-    // console.log(data);
-    // // console.log(navigation);
-    // console.log(route);
 
     useEffect(() => {
         if (userFavorites.length) {
@@ -28,7 +24,6 @@ const Book = ({ data, navigation, route }) => {
     },[favor]);
 
     const toggleFavorite = async () => {
-        // toggleFavor(!favor);
         await authService.addToFavoritList(userId, data.id, token).then(resp => {
             console.log(resp);
             dispatch(setFavorites(resp.data));

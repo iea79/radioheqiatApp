@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, FlatList, ActivityIndicator } from 'react-native';
 import CategoryItem from './CategoryItem';
 import RestService from '../../services/RestService';
 import ss from '../../styles';
@@ -20,31 +20,25 @@ const Categories = ({ navigation }) => {
     const setCats = useCallback(() => {
         restService.getBooksCategories('?parent=0').then(json => {
             setCategory(json);
-        }).catch(err => {
+        }).catch(() => {
             setCategory([]);
         });
     }, [category]);
 
     return (
-        <View style={ ss.content }>
+        <View style={ ss.beforePlayer }>
             <FlatList
                 data={ category }
-                style={ styles.list }
+                style={ ss.content }
                 renderItem={({ item }) => {
                     return <CategoryItem
                     data={item} navigation={ navigation }
                     />;
                 }}
             />
-        { !category.length ? <ActivityIndicator style={ ss.loader } /> : null }
+            { !category.length ? <ActivityIndicator style={ ss.loader } /> : null }
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    loader: {
-        alignSelf: 'center'
-    }
-})
 
 export default Categories;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, Pressable, Image, StyleSheet } from 'react-native';
 
-const CategorySub = ({ data, navigation, route }) => {
+const CategorySub = ({ data, navigation }) => {
     console.log(data);
     const { id, name, media: { cover_small: cover } } = data;
     console.log('CategorySub');
