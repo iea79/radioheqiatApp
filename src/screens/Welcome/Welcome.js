@@ -3,7 +3,8 @@ import {
     StyleSheet,
     Image,
     Text,
-    View
+    View,
+    StatusBar
 } from 'react-native';
 
 const Welcome = ({navigation}) => {
@@ -19,6 +20,9 @@ const Welcome = ({navigation}) => {
         <View
             style={ container }
             >
+            <StatusBar
+                hidden={true}
+                />
             <Image
                 style={ img }
                 resizeMode={'cover'}

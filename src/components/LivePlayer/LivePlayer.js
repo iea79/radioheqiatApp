@@ -138,7 +138,7 @@ const LivePlayer = ({ route }) => {
                     <ActivityIndicator style={styles.descript} />
                     :
                     <View style={styles.descript}>
-                        <Text style={styles.title}>
+                        <Text numberOfLines={1} style={styles.title}>
                             { title }
                         </Text>
                         <Text style={styles.author}>
@@ -207,7 +207,8 @@ const styles = StyleSheet.create({
     wrapper: {
         alignItems: 'center',
         flexDirection: 'row',
-        flexGrow: 1,
+        width: '70%',
+        // flexGrow: 0.6,
         marginRight: 17
     },
     title: {
